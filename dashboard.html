@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Auxia Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0a0a0a;--white:#f5f4f0;--gray:#888;--bd:#1e1e1e;--surface:#111;--surface2:#161616}
+html,body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:64px 1fr;min-height:100vh}
+.topbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--bd);background:rgba(10,10,10,.97);position:sticky;top:0;z-index:100}
+.sidebar{border-right:1px solid var(--bd);padding:24px 0;display:flex;flex-direction:column;gap:4px;background:var(--surface)}
+.main{padding:32px;overflow-y:auto;background:var(--black)}
+
+/* TOPBAR */
+.topbar-logo img{height:22px}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.lang-toggle{display:flex;background:var(--surface);border:1px solid var(--bd);border-radius:20px;overflow:hidden}
+.lang-btn{padding:5px 14px;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border:none;background:transparent;color:var(--gray);cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
+.lang-btn.active{background:var(--white);color:var(--black)}
+.topbar-biz{display:flex;align-items:center;gap:10px}
+.biz-avatar{width:32px;height:32px;background:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--black);flex-shrink:0}
+.biz-name{font-size:13px;font-weight:500;color:var(--white)}
+.biz-plan{font-size:11px;color:var(--gray)}
+.status-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* SIDEBAR */
+.nav-section-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);padding:16px 20px 6px;margin-top:8px}
+.nav-section-label:first-child{margin-top:0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;color:var(--gray);cursor:pointer;border-left:2px solid transparent;transition:.15s;user-select:none}
+.nav-item:hover{color:var(--white);background:rgba(255,255,255,.03)}
+.nav-item.active{color:var(--white);border-left-color:var(--white);background:rgba(255,255,255,.05)}
+.nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:#e24b4a;color:#fff;font-size:10px;font-weight:500;padding:2px 6px;border-radius:10px}
+
+/* PAGE HEADER */
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:var(--white)}
+.page-sub{font-size:13px;color:var(--gray);margin-top:4px}
+.date-range{display:flex;align-items:center;gap:8px}
+.date-btn{background:var(--surface);border:1px solid var(--bd);color:var(--gray);padding:7px 14px;font-size:12px;border-radius:4px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s}
+.date-btn.active{border-color:#444;color:var(--white)}
+.date-btn:hover{border-color:#444;color:var(--white)}
+
+/* METRIC CARDS */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.metric-card{background:var(--surface);border:1px solid var(--bd);padding:20px 24px;border-radius:4px;transition:.2s}
+.metric-card:hover{border-color:#2a2a2a;background:#131313}
+.metric-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:10px}
+.metric-val{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;color:var(--white)}
+.metric-change{font-size:12px;margin-top:6px;display:flex;align-items:center;gap:4px}
+.metric-change.up{color:#4ade80}
+.metric-change.down{color:#e24b4a}
+.metric-change.neutral{color:var(--gray)}
+
+/* SECTIONS */
+.section{background:var(--surface);border:1px solid var(--bd);border-radius:4px;margin-bottom:20px;overflow:hidden}
+.section-hdr{padding:18px 24px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.section-title{font-size:13px;font-weight:500;color:var(--white);letter-spacing:.02em}
+.section-action{font-size:11px;color:var(--gray);cursor:pointer;transition:.15s;text-transform:uppercase;letter-spacing:.06em}
+.section-action:hover{color:var(--white)}
+
+/* ACTIVITY TABLE */
+.conv-table{width:100%;border-collapse:collapse}
+.conv-table th{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);padding:10px 20px;text-align:left;border-bottom:1px solid var(--bd);font-weight:400}
+.conv-table td{padding:12px 20px;font-size:13px;color:var(--gray);border-bottom:1px solid #141414;vertical-align:middle}
+.conv-table tr:last-child td{border-bottom:none}
+.conv-table tr:hover td{background:rgba(255,255,255,.02);color:var(--white)}
+.conv-name{color:var(--white);font-weight:400}
+.conv-msg{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.tag.booked{background:#0a2a0a;color:#4ade80}
+.tag.lead{background:#0a1a2a;color:#60a5fa}
+.tag.doc{background:#2a1a0a;color:#fbbf24}
+.tag.replied{background:#1a1a1a;color:#888}
+.tag.pending{background:#2a1a0a;color:#fbbf24}
+
+/* CONVERSATIONS */
+.conv-list{display:flex;flex-direction:column}
+.conv-item{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid #141414;cursor:pointer;transition:.15s}
+.conv-item:hover{background:rgba(255,255,255,.02)}
+.conv-item:last-child{border-bottom:none}
+.conv-avatar{width:36px;height:36px;background:#1a1a1a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--gray);flex-shrink:0}
+.conv-body{flex:1;min-width:0}
+.conv-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.conv-cname{font-size:13px;font-weight:500;color:var(--white)}
+.conv-time{font-size:11px;color:var(--gray)}
+.conv-preview{font-size:12px;color:var(--gray);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conv-unread{width:7px;height:7px;background:#4ade80;border-radius:50%;margin-top:4px;flex-shrink:0}
+
+/* CHART BAR */
+.chart-wrap{padding:20px 24px}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:8px}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.bar{width:100%;background:#1e1e1e;border-radius:2px 2px 0 0;transition:.3s;min-height:4px;cursor:pointer;position:relative}
+.bar:hover{background:#2a2a2a}
+.bar.highlight{background:var(--white)}
+.bar-label{font-size:10px;color:var(--gray);text-align:center}
+
+/* SETTINGS FORM */
+.settings-section{padding:24px}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray)}
+.field input,.field textarea,.field select{background:transparent;border:1px solid var(--bd);color:var(--white);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;outline:none;transition:.2s;width:100%;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:#444}
+.field input::placeholder,.field textarea::placeholder{color:#333}
+.field select{appearance:none;cursor:pointer}
+.field select option{background:var(--black)}
+.save-btn{background:var(--white);color:var(--black);border:none;padding:11px 28px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s}
+.save-btn:hover{background:#ddd}
+.save-confirm{display:none;font-size:12px;color:#4ade80;margin-left:12px}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--bd)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-info{}
+.toggle-name{font-size:13px;color:var(--white);margin-bottom:2px}
+.toggle-desc{font-size:12px;color:var(--gray)}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:#1e1e1e;border-radius:20px;cursor:pointer;transition:.2s;border:1px solid #333}
+.toggle input:checked+.toggle-track{background:var(--white)}
+.toggle-thumb{position:absolute;width:14px;height:14px;background:#555;border-radius:50%;top:2px;left:2px;transition:.2s;pointer-events:none}
+.toggle input:checked~.toggle-thumb{transform:translateX(16px);background:var(--black)}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* LEADS TABLE */
+.leads-table{width:100%;border-collapse:collapse}
+.leads-table th{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);padding:10px 20px;text-align:left;border-bottom:1px solid var(--bd);font-weight:400}
+.leads-table td{padding:13px 20px;font-size:13px;color:var(--gray);border-bottom:1px solid #141414}
+.leads-table tr:hover td{background:rgba(255,255,255,.02)}
+.leads-table tr:last-child td{border-bottom:none}
+.lead-name{color:var(--white);font-weight:400}
+.lead-phone{font-family:'DM Sans',sans-serif}
+
+/* MOBILE */
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;grid-template-rows:64px auto 1fr}
+  .sidebar{display:none}
+  .main{padding:16px}
+  .metrics-grid{grid-template-columns:1fr 1fr}
+  .settings-grid{grid-template-columns:1fr}
+  .field.full{grid-column:1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <a href="index.html"><img src="logo.png" alt="Auxia"></a>
+  </div>
+  <div class="topbar-right">
+    <div style="display:flex;align-items:center;gap:6px">
+      <div class="status-dot"></div>
+      <span style="font-size:12px;color:#4ade80" id="status-text">Bot active</span>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('es')">ES</button>
+    </div>
+    <div class="topbar-biz">
+      <div class="biz-avatar" id="biz-initials">JS</div>
+      <div>
+        <div class="biz-name" id="biz-name-display">John Smith Realty</div>
+        <div class="biz-plan">Pro Plan</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="nav-section-label" data-en="Overview" data-es="Resumen">Overview</div>
+  <div class="nav-item active" onclick="showPage('dashboard')">
+    <span class="nav-icon">&#9632;</span>
+    <span data-en="Dashboard" data-es="Panel">Dashboard</span>
+  </div>
+  <div class="nav-item" onclick="showPage('conversations')">
+    <span class="nav-icon">&#9786;</span>
+    <span data-en="Conversations" data-es="Conversaciones">Conversations</span>
+    <span class="nav-badge" id="conv-badge">3</span>
+  </div>
+  <div class="nav-item" onclick="showPage('leads')">
+    <span class="nav-icon">&#9670;</span>
+    <span data-en="Leads" data-es="Leads">Leads</span>
+  </div>
+  <div class="nav-section-label" data-en="Activity" data-es="Actividad">Activity</div>
+  <div class="nav-item" onclick="showPage('appointments')">
+    <span class="nav-icon">&#9679;</span>
+    <span data-en="Appointments" data-es="Citas">Appointments</span>
+  </div>
+  <div class="nav-item" onclick="showPage('documents')">
+    <span class="nav-icon">&#9632;</span>
+    <span data-en="Documents sent" data-es="Documentos enviados">Documents sent</span>
+  </div>
+  <div class="nav-section-label" data-en="Settings" data-es="Configuraci&#243;n">Settings</div>
+  <div class="nav-item" onclick="showPage('bot-config')">
+    <span class="nav-icon">&#9881;</span>
+    <span data-en="Bot configuration" data-es="Configurar bot">Bot configuration</span>
+  </div>
+  <div class="nav-item" onclick="showPage('responses')">
+    <span class="nav-icon">&#9997;</span>
+    <span data-en="Auto-responses" data-es="Respuestas autom&#225;ticas">Auto-responses</span>
+  </div>
+  <div class="nav-item" onclick="showPage('settings')">
+    <span class="nav-icon">&#9737;</span>
+    <span data-en="Account" data-es="Cuenta">Account</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ─── DASHBOARD ─── -->
+<div class="page active" id="page-dashboard">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title" data-en="Dashboard" data-es="Panel">Dashboard</div>
+      <div class="page-sub" id="dash-sub">Your AI receptionist performance — last 30 days</div>
+    </div>
+    <div class="date-range">
+      <button class="date-btn" onclick="setRange(this,'7')" data-en="7 days" data-es="7 d&#237;as">7 days</button>
+      <button class="date-btn active" onclick="setRange(this,'30')" data-en="30 days" data-es="30 d&#237;as">30 days</button>
+      <button class="date-btn" onclick="setRange(this,'90')" data-en="90 days" data-es="90 d&#237;as">90 days</button>
+    </div>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label" data-en="Messages replied" data-es="Mensajes respondidos">Messages replied</div>
+      <div class="metric-val" id="m-messages">247</div>
+      <div class="metric-change up">&#8593; 18% vs last period</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label" data-en="Leads captured" data-es="Leads capturados">Leads captured</div>
+      <div class="metric-val" id="m-leads">34</div>
+      <div class="metric-change up">&#8593; 12% vs last period</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label" data-en="Appointments booked" data-es="Citas agendadas">Appointments booked</div>
+      <div class="metric-val" id="m-apts">19</div>
+      <div class="metric-change up">&#8593; 6% vs last period</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label" data-en="Documents sent" data-es="Documentos enviados">Documents sent</div>
+      <div class="metric-val" id="m-docs">41</div>
+      <div class="metric-change neutral">&#8212; Same as last period</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px">
+    <div class="section">
+      <div class="section-hdr">
+        <div class="section-title" data-en="Messages per day" data-es="Mensajes por d&#237;a">Messages per day</div>
+        <div class="section-action" data-en="Last 30 days" data-es="&#218;ltimos 30 d&#237;as">Last 30 days</div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-bars" id="chart-bars"></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray)" id="chart-labels"></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-hdr">
+        <div class="section-title" data-en="Response breakdown" data-es="Desglose de respuestas">Response breakdown</div>
+      </div>
+      <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+            <span style="color:var(--gray)" data-en="Bot handled" data-es="Resuelto por bot">Bot handled</span>
+            <span style="color:var(--white);font-weight:500">92%</span>
+          </div>
+          <div style="height:4px;background:#1a1a1a;border-radius:2px"><div style="height:4px;background:var(--white);border-radius:2px;width:92%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+            <span style="color:var(--gray)" data-en="Appointments" data-es="Citas">Appointments</span>
+            <span style="color:var(--white);font-weight:500">34%</span>
+          </div>
+          <div style="height:4px;background:#1a1a1a;border-radius:2px"><div style="height:4px;background:#4ade80;border-radius:2px;width:34%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+            <span style="color:var(--gray)" data-en="Leads qualified" data-es="Leads calificados">Leads qualified</span>
+            <span style="color:var(--white);font-weight:500">61%</span>
+          </div>
+          <div style="height:4px;background:#1a1a1a;border-radius:2px"><div style="height:4px;background:#60a5fa;border-radius:2px;width:61%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+            <span style="color:var(--gray)" data-en="After hours" data-es="Fuera de horario">After hours</span>
+            <span style="color:var(--white);font-weight:500">48%</span>
+          </div>
+          <div style="height:4px;background:#1a1a1a;border-radius:2px"><div style="height:4px;background:#fbbf24;border-radius:2px;width:48%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-hdr">
+      <div class="section-title" data-en="Recent activity" data-es="Actividad reciente">Recent activity</div>
+      <div class="section-action" onclick="showPage('conversations')" data-en="View all" data-es="Ver todo">View all</div>
+    </div>
+    <table class="conv-table">
+      <thead>
+        <tr>
+          <th data-en="Contact" data-es="Contacto">Contact</th>
+          <th data-en="Last message" data-es="&#218;ltimo mensaje">Last message</th>
+          <th data-en="Time" data-es="Hora">Time</th>
+          <th data-en="Action" data-es="Acci&#243;n">Action</th>
+          <th data-en="Status" data-es="Estado">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="conv-name">Michael Torres</span></td><td class="conv-msg">Is the Oak St property still available?</td><td>2:47 AM</td><td><span class="tag booked" data-en="Viewing booked" data-es="Vista agendada">Viewing booked</span></td><td><span class="tag replied" data-en="Replied" data-es="Respondido">Replied</span></td></tr>
+        <tr><td><span class="conv-name">Sarah Johnson</span></td><td class="conv-msg">What's the price for the 3BR condo?</td><td>11:23 PM</td><td><span class="tag doc" data-en="Brochure sent" data-es="Brochure enviado">Brochure sent</span></td><td><span class="tag replied" data-en="Replied" data-es="Respondido">Replied</span></td></tr>
+        <tr><td><span class="conv-name">David Kim</span></td><td class="conv-msg">Looking to buy in the next 2 months</td><td>9:14 AM</td><td><span class="tag lead" data-en="Lead captured" data-es="Lead capturado">Lead captured</span></td><td><span class="tag booked" data-en="Viewing booked" data-es="Vista agendada">Viewing booked</span></td></tr>
+        <tr><td><span class="conv-name">Ana Reyes</span></td><td class="conv-msg">Do you have commercial properties?</td><td>Yesterday</td><td><span class="tag replied" data-en="Replied" data-es="Respondido">Replied</span></td><td><span class="tag pending" data-en="Pending" data-es="Pendiente">Pending</span></td></tr>
+        <tr><td><span class="conv-name">Robert Chen</span></td><td class="conv-msg">Can you send me the floor plan?</td><td>Yesterday</td><td><span class="tag doc" data-en="Doc sent" data-es="Doc enviado">Doc sent</span></td><td><span class="tag replied" data-en="Replied" data-es="Respondido">Replied</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── CONVERSATIONS ─── -->
+<div class="page" id="page-conversations">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title" data-en="Conversations" data-es="Conversaciones">Conversations</div>
+      <div class="page-sub" data-en="All customer conversations handled by your bot" data-es="Todas las conversaciones atendidas por tu bot">All customer conversations handled by your bot</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:500px">
+    <div class="section" style="overflow-y:auto">
+      <div class="conv-list">
+        <div class="conv-item" onclick="openConv(this,'Michael Torres','Real estate inquiry','Is the Oak St property still available for viewing? I am interested in scheduling a visit this week.','2:47 AM')">
+          <div class="conv-avatar">MT</div>
+          <div class="conv-body">
+            <div class="conv-top"><span class="conv-cname">Michael Torres</span><span class="conv-time">2:47 AM</span></div>
+            <div class="conv-preview">Is the Oak St property still available?</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-item" onclick="openConv(this,'Sarah Johnson','Price inquiry','What is the asking price for the 3-bedroom condo on Maple Avenue? Also do you have a brochure?','11:23 PM')">
+          <div class="conv-avatar">SJ</div>
+          <div class="conv-body">
+            <div class="conv-top"><span class="conv-cname">Sarah Johnson</span><span class="conv-time">11:23 PM</span></div>
+            <div class="conv-preview">What's the price for the 3BR condo?</div>
+          </div>
+          <div class="conv-unread"></div>
+        </div>
+        <div class="conv-item" onclick="openConv(this,'David Kim','Buyer lead','Hi I am looking to buy a 4 bedroom home in the next 2 months. Budget around 650k. Can we schedule a call?','9:14 AM')">
+          <div class="conv-avatar">DK</div>
+          <div class="conv-body">
+            <div class="conv-top"><span class="conv-cname">David Kim</span><span class="conv-time">9:14 AM</span></div>
+            <div class="conv-preview">Looking to buy in the next 2 months</div>
+          </div>
+        </div>
+        <div class="conv-item" onclick="openConv(this,'Ana Reyes','Commercial inquiry','Hola, tienen propiedades comerciales disponibles? Busco un local de 200 metros en zona centro.','Yesterday')">
+          <div class="conv-avatar">AR</div>
+          <div class="conv-body">
+            <div class="conv-top"><span class="conv-cname">Ana Reyes</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-preview">Do you have commercial properties?</div>
+          </div>
+        </div>
+        <div class="conv-item" onclick="openConv(this,'Robert Chen','Document request','Can you send me the floor plan and virtual tour link for the downtown penthouse listing?','Yesterday')">
+          <div class="conv-avatar">RC</div>
+          <div class="conv-body">
+            <div class="conv-top"><span class="conv-cname">Robert Chen</span><span class="conv-time">Yesterday</span></div>
+            <div class="conv-preview">Can you send me the floor plan?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section" id="conv-detail" style="display:flex;flex-direction:column">
+      <div class="section-hdr" id="conv-detail-hdr">
+        <div class="section-title" data-en="Select a conversation" data-es="Selecciona una conversaci&#243;n">Select a conversation</div>
+      </div>
+      <div style="flex:1;padding:20px;display:flex;flex-direction:column;gap:10px;overflow-y:auto" id="conv-messages">
+        <div style="margin:auto;text-align:center;color:var(--gray);font-size:13px" data-en="Click a conversation to view the full thread" data-es="Haz clic en una conversaci&#243;n para ver el hilo completo">Click a conversation to view the full thread</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── LEADS ─── -->
+<div class="page" id="page-leads">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title" data-en="Leads" data-es="Leads">Leads</div>
+      <div class="page-sub" data-en="Contacts captured and qualified by your bot" data-es="Contactos capturados y calificados por tu bot">Contacts captured and qualified by your bot</div>
+    </div>
+  </div>
+  <div class="section">
+    <table class="leads-table">
+      <thead>
+        <tr>
+          <th data-en="Name" data-es="Nombre">Name</th>
+          <th data-en="Phone" data-es="Tel&#233;fono">Phone</th>
+          <th data-en="Interest" data-es="Inter&#233;s">Interest</th>
+          <th data-en="Budget" data-es="Presupuesto">Budget</th>
+          <th data-en="Timeline" data-es="Plazo">Timeline</th>
+          <th data-en="Status" data-es="Estado">Status</th>
+          <th data-en="Captured" data-es="Capturado">Captured</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="lead-name">David Kim</span></td><td class="lead-phone">+1 (956) 445-2211</td><td>4BR Home, suburbs</td><td>$650,000</td><td data-en="2 months" data-es="2 meses">2 months</td><td><span class="tag booked" data-en="Hot lead" data-es="Lead caliente">Hot lead</span></td><td>Today, 9:14 AM</td></tr>
+        <tr><td><span class="lead-name">Jennifer Walsh</span></td><td class="lead-phone">+1 (956) 338-7744</td><td>Condo, downtown</td><td>$380,000</td><td data-en="6 months" data-es="6 meses">6 months</td><td><span class="tag lead" data-en="Warm" data-es="Tibio">Warm</span></td><td>Yesterday</td></tr>
+        <tr><td><span class="lead-name">Carlos Mendez</span></td><td class="lead-phone">+1 (956) 772-9901</td><td>Investment property</td><td>$1.2M</td><td data-en="3 months" data-es="3 meses">3 months</td><td><span class="tag booked" data-en="Hot lead" data-es="Lead caliente">Hot lead</span></td><td>Mar 23</td></tr>
+        <tr><td><span class="lead-name">Lisa Park</span></td><td class="lead-phone">+1 (956) 554-0023</td><td>Rental, 2BR</td><td>$2,200/mo</td><td data-en="Immediately" data-es="Inmediato">Immediately</td><td><span class="tag booked" data-en="Hot lead" data-es="Lead caliente">Hot lead</span></td><td>Mar 22</td></tr>
+        <tr><td><span class="lead-name">Mark Thompson</span></td><td class="lead-phone">+1 (956) 881-4456</td><td>Family home, 3BR</td><td>$420,000</td><td data-en="1 year" data-es="1 a&#241;o">1 year</td><td><span class="tag replied" data-en="Cold" data-es="Fr&#237;o">Cold</span></td><td>Mar 20</td></tr>
+        <tr><td><span class="lead-name">Ana Reyes</span></td><td class="lead-phone">+1 (956) 223-6678</td><td>Commercial, 200sqm</td><td>Negotiable</td><td data-en="ASAP" data-es="Urgente">ASAP</td><td><span class="tag lead" data-en="Warm" data-es="Tibio">Warm</span></td><td>Yesterday</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── APPOINTMENTS ─── -->
+<div class="page" id="page-appointments">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title" data-en="Appointments" data-es="Citas">Appointments</div>
+      <div class="page-sub" data-en="Viewings and meetings booked by your bot" data-es="Visitas y reuniones agendadas por tu bot">Viewings and meetings booked by your bot</div>
+    </div>
+  </div>
+  <div class="section">
+    <table class="leads-table">
+      <thead>
+        <tr>
+          <th data-en="Client" data-es="Cliente">Client</th>
+          <th data-en="Type" data-es="Tipo">Type</th>
+          <th data-en="Date & Time" data-es="Fecha y hora">Date & Time</th>
+          <th data-en="Property" data-es="Propiedad">Property</th>
+          <th data-en="Status" data-es="Estado">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="lead-name">Michael Torres</span></td><td data-en="Property viewing" data-es="Vista de propiedad">Property viewing</td><td>Mar 26, 10:00 AM</td><td>123 Oak St</td><td><span class="tag booked" data-en="Confirmed" data-es="Confirmado">Confirmed</span></td></tr>
+        <tr><td><span class="lead-name">David Kim</span></td><td data-en="Consultation" data-es="Consulta">Consultation</td><td>Mar 26, 2:00 PM</td><td>—</td><td><span class="tag booked" data-en="Confirmed" data-es="Confirmado">Confirmed</span></td></tr>
+        <tr><td><span class="lead-name">Lisa Park</span></td><td data-en="Property viewing" data-es="Vista de propiedad">Property viewing</td><td>Mar 27, 11:00 AM</td><td>456 Maple Ave, Unit 3B</td><td><span class="tag lead" data-en="Pending confirm" data-es="Por confirmar">Pending confirm</span></td></tr>
+        <tr><td><span class="lead-name">Carlos Mendez</span></td><td data-en="Investment review" data-es="Revisi&#243;n de inversi&#243;n">Investment review</td><td>Mar 28, 9:00 AM</td><td>Portfolio</td><td><span class="tag booked" data-en="Confirmed" data-es="Confirmado">Confirmed</span></td></tr>
+        <tr><td><span class="lead-name">Jennifer Walsh</span></td><td data-en="Property viewing" data-es="Vista de propiedad">Property viewing</td><td>Mar 29, 3:00 PM</td><td>789 Downtown Blvd, Penthouse</td><td><span class="tag replied" data-en="Cancelled" data-es="Cancelado">Cancelled</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── DOCUMENTS ─── -->
+<div class="page" id="page-documents">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title" data-en="Documents sent" data-es="Documentos enviados">Documents sent</div>
+      <div class="page-sub" data-en="Files and brochures sent automatically by your bot" data-es="Archivos y brochures enviados autom&#225;ticamente por tu bot">Files and brochures sent automatically by your bot</div>
+    </div>
+  </div>
+  <div class="section">
+    <table class="leads-table">
+      <thead>
+        <tr>
+          <th data-en="Document" data-es="Documento">Document</th>
+          <th data-en="Sent to" data-es="Enviado a">Sent to</th>
+          <th data-en="Type" data-es="Tipo">Type</th>
+          <th data-en="Date" data-es="Fecha">Date</th>
+          <th data-en="Channel" data-es="Canal">Channel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="lead-name">Oak St Property Brochure.pdf</span></td><td>Michael Torres</td><td><span class="tag doc">PDF</span></td><td>Today, 2:47 AM</td><td>WhatsApp</td></tr>
+        <tr><td><span class="lead-name">Maple Ave Condo Brochure.pdf</span></td><td>Sarah Johnson</td><td><span class="tag doc">PDF</span></td><td>Today, 11:23 PM</td><td>WhatsApp</td></tr>
+        <tr><td><span class="lead-name">Downtown Penthouse Floor Plan.pdf</span></td><td>Robert Chen</td><td><span class="tag doc">PDF</span></td><td>Yesterday</td><td>SMS</td></tr>
+        <tr><td><span class="lead-name">Investment Portfolio Overview.pdf</span></td><td>Carlos Mendez</td><td><span class="tag doc">PDF</span></td><td>Mar 23</td><td>WhatsApp</td></tr>
+        <tr><td><span class="lead-name">Buyer's Guide 2026.pdf</span></td><td>Jennifer Walsh</td><td><span class="tag doc">PDF</span></td><td>Mar 22</td><td>WhatsApp</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── BOT CONFIG ─── -->
+<div class="page" id="page-bot-config">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title" data-en="Bot configuration" data-es="Configurar bot">Bot configuration</div>
+      <div class="page-sub" data-en="Customize how your AI receptionist behaves" data-es="Personaliza c&#243;mo se comporta tu recepcionista IA">Customize how your AI receptionist behaves</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-hdr"><div class="section-title" data-en="Business information" data-es="Informaci&#243;n del negocio">Business information</div></div>
+    <div class="settings-section">
+      <div class="settings-grid">
+        <div class="field">
+          <label data-en="Business name" data-es="Nombre del negocio">Business name</label>
+          <input type="text" id="biz-name" value="John Smith Realty" oninput="updateBizName(this.value)">
+        </div>
+        <div class="field">
+          <label data-en="WhatsApp number" data-es="N&#250;mero de WhatsApp">WhatsApp number</label>
+          <input type="text" value="+1 (956) 997-9277">
+        </div>
+        <div class="field">
+          <label data-en="Business hours" data-es="Horario de atenci&#243;n">Business hours</label>
+          <input type="text" value="Mon–Fri 9am–6pm, Sat 10am–3pm">
+        </div>
+        <div class="field">
+          <label data-en="Location / Service area" data-es="Ubicaci&#243;n / &#193;rea de servicio">Location / Service area</label>
+          <input type="text" value="Laredo & McAllen, Texas">
+        </div>
+        <div class="field full">
+          <label data-en="Business description (what the bot tells customers)" data-es="Descripci&#243;n del negocio (lo que el bot le dice a los clientes)">Business description</label>
+          <textarea rows="3">We are a full-service real estate agency specializing in residential and commercial properties in South Texas. We help buyers, sellers, and investors find their perfect property.</textarea>
+        </div>
+        <div class="field full">
+          <label data-en="Services offered" data-es="Servicios ofrecidos">Services offered</label>
+          <textarea rows="3">Property buying, selling, rentals, investment properties, commercial real estate, property valuations, first-time buyer guidance</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section" style="margin-top:16px">
+    <div class="section-hdr"><div class="section-title" data-en="Bot behavior" data-es="Comportamiento del bot">Bot behavior</div></div>
+    <div class="settings-section">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-name" data-en="24/7 auto-reply" data-es="Respuesta autom&#225;tica 24/7">24/7 auto-reply</div>
+          <div class="toggle-desc" data-en="Bot responds at all hours, including nights and weekends" data-es="El bot responde a toda hora, incluyendo noches y fines de semana">Bot responds at all hours</div>
+        </div>
+        <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-name" data-en="Appointment booking" data-es="Agendado de citas">Appointment booking</div>
+          <div class="toggle-desc" data-en="Bot can book viewings and meetings automatically" data-es="El bot puede agendar visitas y reuniones autom&#225;ticamente">Bot can book viewings and meetings</div>
+        </div>
+        <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-name" data-en="Lead qualification" data-es="Calificaci&#243;n de leads">Lead qualification</div>
+          <div class="toggle-desc" data-en="Bot asks qualifying questions before forwarding leads" data-es="El bot hace preguntas de calificaci&#243;n antes de pasar los leads">Bot asks qualifying questions</div>
+        </div>
+        <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-name" data-en="Document sending" data-es="Env&#237;o de documentos">Document sending</div>
+          <div class="toggle-desc" data-en="Bot sends brochures and property info automatically" data-es="El bot env&#237;a brochures e informaci&#243;n de propiedades autom&#225;ticamente">Bot sends brochures automatically</div>
+        </div>
+        <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-name" data-en="Bilingual responses" data-es="Respuestas biling&#252;es">Bilingual responses</div>
+          <div class="toggle-desc" data-en="Bot detects and responds in English or Spanish automatically" data-es="El bot detecta y responde en ingl&#233;s o espa&#241;ol autom&#225;ticamente">Responds in English or Spanish</div>
+        </div>
+        <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 0 8px;display:flex;align-items:center">
+    <button class="save-btn" onclick="saveConfig()" data-en="Save configuration" data-es="Guardar configuraci&#243;n">Save configuration</button>
+    <span class="save-confirm" id="save-confirm" data-en="Saved successfully" data-es="Guardado correctamente">Saved successfully</span>
+  </div>
+</div>
+
+<!-- ─── AUTO RESPONSES ─── -->
+<div class="page" id="page-responses">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title" data-en="Auto-responses" data-es="Respuestas autom&#225;ticas">Auto-responses</div>
+      <div class="page-sub" data-en="Customize what your bot says in common situations" data-es="Personaliza lo que dice tu bot en situaciones comunes">Customize what your bot says</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-hdr"><div class="section-title" data-en="Message templates" data-es="Plantillas de mensajes">Message templates</div></div>
+    <div class="settings-section">
+      <div class="settings-grid">
+        <div class="field full">
+          <label data-en="Welcome message (first contact)" data-es="Mensaje de bienvenida (primer contacto)">Welcome message</label>
+          <textarea rows="3">Hi! Thanks for reaching out to John Smith Realty. I'm Auxia, your virtual assistant. How can I help you today? I can answer questions, schedule viewings, or send you property information.</textarea>
+        </div>
+        <div class="field full">
+          <label data-en="After hours message" data-es="Mensaje fuera de horario">After hours message</label>
+          <textarea rows="3">Hi! You've reached John Smith Realty after hours. I'm Auxia, your 24/7 assistant. I can still help you right now — just tell me what you're looking for and I'll get started.</textarea>
+        </div>
+        <div class="field full">
+          <label data-en="Appointment confirmation message" data-es="Mensaje de confirmaci&#243;n de cita">Appointment confirmation</label>
+          <textarea rows="3">Your viewing has been confirmed! See you on [DATE] at [TIME] for [PROPERTY]. John will meet you there. Reply to this message if you need to reschedule.</textarea>
+        </div>
+        <div class="field full">
+          <label data-en="Document sent message" data-es="Mensaje al enviar documento">When document is sent</label>
+          <textarea rows="3">Here's the information you requested! Take a look and let me know if you have any questions. I'm available anytime.</textarea>
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveConfig()" data-en="Save responses" data-es="Guardar respuestas">Save responses</button>
+      <span class="save-confirm" id="save-confirm2" data-en="Saved successfully" data-es="Guardado correctamente">Saved successfully</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ACCOUNT SETTINGS ─── -->
+<div class="page" id="page-settings">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title" data-en="Account" data-es="Cuenta">Account</div>
+      <div class="page-sub" data-en="Your plan and account details" data-es="Tu plan y detalles de cuenta">Your plan and account details</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="section">
+      <div class="section-hdr"><div class="section-title" data-en="Current plan" data-es="Plan actual">Current plan</div></div>
+      <div class="settings-section">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;margin-bottom:4px">Pro</div>
+        <div style="font-size:13px;color:var(--gray);margin-bottom:20px" data-en="USD 499 setup + 169/mo" data-es="USD 499 configuraci&#243;n + 169/mes">USD 499 setup + 169/mo</div>
+        <div class="toggle-row">
+          <span style="font-size:13px;color:var(--gray)" data-en="Next billing date" data-es="Pr&#243;xima fecha de cobro">Next billing date</span>
+          <span style="font-size:13px;color:var(--white)">April 24, 2026</span>
+        </div>
+        <div class="toggle-row">
+          <span style="font-size:13px;color:var(--gray)" data-en="Bot status" data-es="Estado del bot">Bot status</span>
+          <span style="font-size:13px;color:#4ade80" data-en="Active" data-es="Activo">Active</span>
+        </div>
+        <div class="toggle-row">
+          <span style="font-size:13px;color:var(--gray)" data-en="Member since" data-es="Miembro desde">Member since</span>
+          <span style="font-size:13px;color:var(--white)">March 24, 2026</span>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="save-btn" data-en="Upgrade to Elite" data-es="Subir a Elite">Upgrade to Elite</button>
+          <button style="background:transparent;border:1px solid var(--bd);color:var(--gray);padding:11px 20px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s" onmouseover="this.style.borderColor='#444';this.style.color='var(--white)'" onmouseout="this.style.borderColor='var(--bd)';this.style.color='var(--gray)'" data-en="Contact support" data-es="Contactar soporte">Contact support</button>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-hdr"><div class="section-title" data-en="Contact & notifications" data-es="Contacto y notificaciones">Contact & notifications</div></div>
+      <div class="settings-section">
+        <div class="settings-grid" style="grid-template-columns:1fr">
+          <div class="field">
+            <label data-en="Your email" data-es="Tu email">Your email</label>
+            <input type="email" value="john@smithrealty.com">
+          </div>
+          <div class="field">
+            <label data-en="Notification number (WhatsApp)" data-es="N&#250;mero de notificaciones (WhatsApp)">Notification number</label>
+            <input type="text" value="+1 (956) 997-9277">
+          </div>
+        </div>
+        <div style="margin-top:4px">
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-name" data-en="New lead notifications" data-es="Notificaciones de nuevos leads">New lead notifications</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-name" data-en="New appointment notifications" data-es="Notificaciones de nuevas citas">New appointment notifications</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-name" data-en="Weekly summary report" data-es="Reporte semanal">Weekly summary report</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <button class="save-btn" onclick="saveConfig()" data-en="Save settings" data-es="Guardar configuraci&#243;n">Save settings</button>
+          <span class="save-confirm" id="save-confirm3">Saved</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+var currentLang = 'en';
+var currentRange = '30';
+
+const rangeData = {
+  '7':  { messages:58,  leads:8,  apts:4,  docs:9  },
+  '30': { messages:247, leads:34, apts:19, docs:41 },
+  '90': { messages:712, leads:98, apts:54, docs:118 }
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.lang-btn:' + (lang==='en'?'first':'last') + '-child').classList.add('active');
+  document.getElementById('dash-sub').textContent = lang==='en'
+    ? 'Your AI receptionist performance — last ' + currentRange + ' days'
+    : 'Rendimiento de tu recepcionista IA — &#250;ltimos ' + currentRange + ' d&#237;as';
+  document.getElementById('status-text').textContent = lang==='en' ? 'Bot active' : 'Bot activo';
+}
+
+function setRange(btn, range) {
+  currentRange = range;
+  document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = rangeData[range];
+  document.getElementById('m-messages').textContent = d.messages;
+  document.getElementById('m-leads').textContent = d.leads;
+  document.getElementById('m-apts').textContent = d.apts;
+  document.getElementById('m-docs').textContent = d.docs;
+  buildChart(range);
+}
+
+function buildChart(range) {
+  const bars = document.getElementById('chart-bars');
+  const labels = document.getElementById('chart-labels');
+  const counts = parseInt(range);
+  const days = Math.min(counts, 14);
+  const dayLabels = [];
+  const now = new Date();
+  bars.innerHTML = '';
+  labels.innerHTML = '';
+  const vals = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    dayLabels.push(d.getDate());
+    vals.push(Math.floor(4 + Math.random() * 18));
+  }
+  const max = Math.max(...vals);
+  vals.forEach((v, i) => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const bar = document.createElement('div');
+    bar.className = 'bar' + (i === vals.length - 1 ? ' highlight' : '');
+    bar.style.height = Math.max(8, (v/max)*110) + 'px';
+    bar.title = v + ' messages';
+    col.appendChild(bar);
+    bars.appendChild(col);
+    if (i % 3 === 0 || i === vals.length - 1) {
+      const lbl = document.createElement('span');
+      lbl.textContent = dayLabels[i];
+      labels.appendChild(lbl);
+    } else {
+      labels.appendChild(document.createElement('span'));
+    }
+  });
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'conversations') document.getElementById('conv-badge').style.display = 'none';
+}
+
+function openConv(el, name, subject, msg, time) {
+  document.querySelectorAll('.conv-item').forEach(c => c.style.background = '');
+  el.style.background = 'rgba(255,255,255,.04)';
+  document.querySelectorAll('.conv-unread').forEach(u => {
+    if (u.closest('.conv-item') === el) u.style.display = 'none';
+  });
+  document.getElementById('conv-detail-hdr').innerHTML =
+    '<div class="section-title">' + name + '</div><span style="font-size:11px;color:var(--gray)">' + subject + '</span>';
+  const msgs = document.getElementById('conv-messages');
+  msgs.innerHTML = '';
+  const addMsg = (type, text, t) => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;align-items:' + (type==='in'?'flex-start':'flex-end') + ';gap:3px';
+    const bub = document.createElement('div');
+    bub.style.cssText = 'max-width:80%;padding:10px 14px;font-size:13px;line-height:1.5;border-radius:' + (type==='in'?'2px 12px 12px 2px':'12px 2px 2px 12px') + ';background:' + (type==='in'?'#1a1a1a':'var(--white)') + ';color:' + (type==='in'?'var(--gray)':'var(--black)') + ';font-family:"DM Sans",sans-serif';
+    bub.textContent = text;
+    const tm = document.createElement('div');
+    tm.style.cssText = 'font-size:10px;color:#444';
+    tm.textContent = t;
+    wrap.appendChild(bub);
+    wrap.appendChild(tm);
+    msgs.appendChild(wrap);
+  };
+  addMsg('in', msg, time);
+  addMsg('out', 'Hi! Thanks for reaching out. ' + (subject.includes('available') ? 'Yes, that property is still available! I have viewing slots at 10am and 2pm tomorrow. Which works best for you?' : subject.includes('price') ? 'Great question! I can send you the full pricing details and a brochure right now. What\'s the best number to send it to?' : 'I\'d love to help you with that. Let me gather a bit more information. What\'s your timeline and budget range?'), time);
+  setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 50);
+}
+
+function updateBizName(val) {
+  document.getElementById('biz-name-display').textContent = val || 'Your Business';
+  const initials = val.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('biz-initials').textContent = initials || 'AU';
+}
+
+function saveConfig() {
+  document.querySelectorAll('.save-confirm').forEach(el => {
+    el.style.display = 'inline';
+    setTimeout(() => { el.style.display = 'none'; }, 2500);
+  });
+}
+
+buildChart('30');
+</script>
+</body>
+</html>
