@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Privacy Policy — Auxia</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0a0a0a;--white:#f5f4f0;--gray:#888;--bd:#1a1a1a}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
+.cursor{position:fixed;width:10px;height:10px;background:var(--white);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+.cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(245,244,240,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:.15s ease-out}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid #161616;background:rgba(10,10,10,.95);backdrop-filter:blur(12px)}
+.nav-logo img{height:26px}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{color:var(--gray);text-decoration:none;font-size:13px;letter-spacing:.05em;text-transform:uppercase;transition:.2s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{background:var(--white);color:var(--black);padding:10px 24px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:.2s}
+.nav-cta:hover{background:transparent;color:var(--white);outline:1px solid var(--white)}
+.page-hero{padding:160px 48px 80px;border-bottom:1px solid var(--bd)}
+.page-eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gray);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.page-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--gray)}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,8vw,100px);line-height:.92;margin-bottom:20px}
+.page-sub{font-size:15px;color:var(--gray);max-width:520px;line-height:1.7}
+.content-wrap{padding:60px 48px;max-width:820px}
+.content-wrap h2{font-family:'Bebas Neue',sans-serif;font-size:30px;margin:40px 0 12px;color:var(--white)}
+.content-wrap h2:first-child{margin-top:0}
+.content-wrap p{font-size:15px;color:var(--gray);line-height:1.8;margin-bottom:14px}
+.content-wrap ul{margin:0 0 14px 22px}
+.content-wrap li{font-size:15px;color:var(--gray);line-height:1.8;margin-bottom:6px}
+.content-wrap a{color:var(--white);text-underline-offset:3px}
+footer{padding:36px 48px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-logo img{height:20px}
+.footer-text{font-size:12px;color:var(--gray)}
+.footer-links{display:flex;gap:24px;list-style:none}
+.footer-links a{font-size:12px;color:var(--gray);text-decoration:none;text-transform:uppercase;letter-spacing:.06em;transition:.2s}
+.footer-links a:hover{color:var(--white)}
+
+@media(max-width:768px){
+  nav{padding:16px 20px}
+  .nav-links{display:none}
+  .hero{grid-template-columns:1fr;min-height:auto;padding-top:90px}
+  .hero-left{padding:40px 20px 30px}
+  .hero-right{display:none}
+  .hero-title{font-size:clamp(48px,12vw,80px)}
+  .hero-sub{font-size:14px}
+  .hero-stats{position:static;flex-direction:row;gap:24px;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd)}
+  .section{padding:60px 20px}
+  .steps{grid-template-columns:1fr}
+  .step{border-right:none;border-bottom:1px solid var(--bd);padding:28px 0}
+  .niches-grid{grid-template-columns:1fr 1fr}
+  .tiers-grid{grid-template-columns:1fr}
+  .cta-sec{padding:80px 20px}
+  footer{padding:28px 20px;flex-direction:column;gap:16px;text-align:center}
+  .footer-links{justify-content:center}
+  .page-hero{padding:120px 20px 48px}
+  .page-title{font-size:clamp(48px,12vw,80px)}
+  .content-wrap{padding:40px 20px}
+  .contact-grid{grid-template-columns:1fr;margin:40px 20px}
+  .form-section{padding:40px 20px}
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:1}
+  .chat-widget{bottom:16px;right:16px}
+  .chat-box{width:calc(100vw - 32px)}
+  .pricing-grid{grid-template-columns:1fr}
+  .pain-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .niche-card{padding:28px 20px}
+  .hero-actions{flex-direction:column;align-items:flex-start;gap:16px}
+  .ticker-inner{animation-duration:12s}
+  .margin-row{grid-template-columns:1fr}
+  .plans-grid{grid-template-columns:1fr}
+  .names-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .niches-grid{grid-template-columns:1fr}
+  .hero-title{font-size:52px}
+  nav{padding:14px 16px}
+  .nav-cta{padding:8px 16px;font-size:11px}
+}
+</style>
+
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="ring"></div>
+<nav>
+  <div class="nav-logo"><a href="index.html"><img src="logo.png" alt="Auxia"></a></div>
+  <ul class="nav-links">
+    <li><a href="index.html#how">How it works</a></li>
+    <li><a href="index.html#niches">Industries</a></li>
+    <li><a href="index.html#pricing">Pricing</a></li>
+  </ul>
+  <a href="contact.html" class="nav-cta">Contact us</a>
+</nav>
+
+<section class="page-hero">
+  <div class="page-eyebrow">Legal</div>
+  <h1 class="page-title">Privacy<br>Policy</h1>
+  <p class="page-sub">Last updated March 24, 2026. We take your privacy seriously — here is exactly how we handle your data.</p>
+</section>
+<div class="content-wrap">
+  <h2>Who we are</h2>
+  <p>Auxia is an AI-powered virtual receptionist service founded by Emiliano and Julio Carrizales Padilla. We help real estate agents and small businesses automate their customer communication through WhatsApp and SMS.</p>
+
+  <h2>What data we collect</h2>
+  <p>When you use Auxia or interact with an Auxia-powered assistant, we may collect:</p>
+  <ul>
+    <li>Contact information such as name, phone number, and email address</li>
+    <li>Conversation data from WhatsApp and SMS interactions</li>
+    <li>Appointment and booking information</li>
+    <li>Business information provided during onboarding and setup</li>
+    <li>Usage data and interaction logs</li>
+  </ul>
+
+  <h2>How we use your data</h2>
+  <p>We use collected data to provide and improve our AI receptionist service, respond to messages and book appointments on behalf of our clients, improve our AI models using anonymized data only, send service-related communications, and comply with legal obligations.</p>
+
+  <h2>Data sharing</h2>
+  <p>We do not sell your personal data. We may share data with our clients who receive conversation logs relevant to their business, with service providers under strict confidentiality agreements, and with law enforcement only when legally required.</p>
+
+  <h2>WhatsApp and SMS</h2>
+  <p>Conversations processed through Auxia are subject to WhatsApp's and your carrier's terms of service in addition to this policy. We process messages only to deliver the service. Conversation content is stored securely and not used for advertising.</p>
+
+  <h2>Data retention</h2>
+  <p>We retain conversation data for up to 12 months unless a client requests earlier deletion. Account information is retained while the account is active. You may request deletion of your data at any time by contacting us at <a href="/cdn-cgi/l/email-protection#99e9ebf0eff8fae0d9f8ece1f0f8b7f8f0"><span class="__cf_email__" data-cfemail="18686a716e797b6158796d607179367971">[email&#160;protected]</span></a>.</p>
+
+  <h2>Your rights</h2>
+  <p>You have the right to access, correct, or delete any personal data we hold about you. To exercise these rights, contact us at <a href="/cdn-cgi/l/email-protection#68181a011e090b1128091d100109460901"><span class="__cf_email__" data-cfemail="0474766d7265677d4465717c6d652a656d">[email&#160;protected]</span></a>. We will respond within 30 days.</p>
+
+  <h2>Security</h2>
+  <p>We use industry-standard encryption and security measures to protect your data. Our infrastructure runs on private servers with access controls, monitoring, and regular security audits.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>We may update this policy periodically. We will notify active clients of material changes via email at least 14 days before they take effect.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy? Email us at <a href="/cdn-cgi/l/email-protection#0e7e7c67786f6d774e6f7b76676f206f67"><span class="__cf_email__" data-cfemail="2555574c5344465c6544505d4c440b444c">[email&#160;protected]</span></a> or visit our <a href="contact.html">contact page</a>.</p>
+</div>
+
+<footer>
+  <div class="footer-logo"><a href="index.html"><img src="logo.png" alt="Auxia"></a></div>
+  <span class="footer-text">&copy; 2026 Auxia. All rights reserved.</span>
+  <ul class="footer-links">
+    <li><a href="privacy.html">Privacy</a></li>
+    <li><a href="terms.html">Terms</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</footer>
+
+
+<sc

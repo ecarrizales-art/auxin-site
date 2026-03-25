@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auxia for Restaurants & Food Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0a0a0a;--white:#f5f4f0;--gray:#888;--bd:#1a1a1a}
+html{scroll-behavior:smooth}
+html{background:#0a0a0a}body{background:#0a0a0a;color:var(--white);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
+.cursor{position:fixed;width:10px;height:10px;background:var(--white);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+.cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(245,244,240,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:.15s ease-out}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid #161616;background:rgba(10,10,10,.92);backdrop-filter:blur(12px)}
+.nav-logo img{height:26px}
+.nav-back{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray);text-decoration:none;display:flex;align-items:center;gap:8px;transition:.2s}
+.nav-back:hover{color:var(--white)}
+.nav-back::before{content:'←'}
+.nav-cta{background:var(--white);color:var(--black);padding:10px 24px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:.2s}
+.nav-cta:hover{background:transparent;color:var(--white);outline:1px solid var(--white)}
+
+/* HERO */
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:80px}
+.hero-left{padding:80px 48px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--bd)}
+.hero-right{display:flex;align-items:center;justify-content:center;padding:60px 48px;background:#080808;position:relative;overflow:hidden}
+
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);border:1px solid var(--bd);padding:6px 14px;width:fit-content;margin-bottom:28px;opacity:0;animation:fadeUp .7s ease forwards .1s}
+.pill-dot{width:6px;height:6px;border-radius:50%;background:#fff}
+
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,6.5vw,96px);line-height:.92;margin-bottom:32px;opacity:0;animation:fadeUp .7s ease forwards .3s}
+.outline{-webkit-text-stroke:1px var(--white);color:transparent}
+.hero-sub{font-size:16px;color:var(--gray);max-width:440px;line-height:1.7;margin-bottom:48px;opacity:0;animation:fadeUp .7s ease forwards .5s}
+.hero-actions{display:flex;align-items:center;gap:20px;opacity:0;animation:fadeUp .7s ease forwards .7s}
+.btn-primary{background:var(--white);color:var(--black);padding:15px 36px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:.2s;display:inline-block}
+.btn-primary:hover{background:transparent;color:var(--white);outline:1px solid var(--white)}
+.btn-sec{color:var(--gray);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;gap:6px;transition:.2s}
+.btn-sec:hover{color:var(--white)}
+.btn-sec::after{content:'→';transition:.2s}
+.btn-sec:hover::after{transform:translateX(4px)}
+
+/* Stats */
+.stats-row{display:flex;gap:40px;margin-top:52px;padding-top:40px;border-top:1px solid var(--bd);opacity:0;animation:fadeUp .7s ease forwards .9s}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:44px;line-height:1;color:var(--white)}
+.stat-label{font-size:11px;color:var(--gray);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+
+/* Chat mockup */
+.chat{width:320px;background:#111;border:1px solid #222;padding:24px;opacity:0;animation:fadeUp .7s ease forwards 1.1s;position:relative;z-index:2}
+.chat-hdr{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #1e1e1e}
+.chat-av{width:34px;height:34px;background:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.chat-nm{font-size:13px;font-weight:500;color:var(--white)}
+.chat-st{font-size:11px;color:#4ade80}
+.bubble{margin-bottom:8px;max-width:88%}
+.bubble.in{background:#1a1a1a;padding:10px 14px;font-size:12px;color:var(--gray);line-height:1.5;border-radius:2px 12px 12px 2px}
+.bubble.out{background:var(--white);padding:10px 14px;font-size:12px;color:var(--black);line-height:1.5;margin-left:auto;border-radius:12px 2px 2px 12px}
+.chat-time{font-size:10px;color:#444;text-align:right;margin-bottom:10px}
+.typing{display:flex;gap:4px;padding:10px 14px;background:#1a1a1a;width:fit-content;border-radius:2px 12px 12px 2px;margin-top:4px}
+.typing span{width:6px;height:6px;background:var(--gray);border-radius:50%;animation:bounce 1.2s ease infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+/* BG grid */
+.hero-bg-grid{position:absolute;inset:0;background-image:linear-gradient(#1a1a1a 1px,transparent 1px),linear-gradient(90deg,#1a1a1a 1px,transparent 1px);background-size:60px 60px;opacity:.4;pointer-events:none}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);overflow:hidden;padding:13px 0;background:#0d0d0d}
+.ticker-inner{display:flex;gap:56px;animation:tick 22s linear infinite;white-space:nowrap}
+.ticker-item{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);display:flex;align-items:center;gap:56px;flex-shrink:0}
+.ticker-item::after{content:'⚡';font-size:10px}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+.section{padding:100px 48px;border-top:1px solid var(--bd)}
+.sec-label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gray);margin-bottom:52px;display:flex;align-items:center;gap:12px}
+.sec-label::before{content:'';display:block;width:28px;height:1px;background:var(--gray)}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5.5vw,72px);line-height:.95;margin-bottom:60px;max-width:680px}
+
+/* Pain points */
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);margin-bottom:60px}
+.pain-card{background:var(--black);padding:40px 32px;transition:.3s}
+.pain-card:hover{background:#0f0f0f}
+.pain-num{font-family:'Bebas Neue',sans-serif;font-size:56px;color:#1e1e1e;line-height:1;margin-bottom:16px;transition:.3s}
+.pain-card:hover .pain-num{color:#2a2a2a}
+.pain-title{font-size:16px;font-weight:500;color:var(--white);margin-bottom:8px}
+.pain-text{font-size:13px;color:var(--gray);line-height:1.65}
+
+/* Features */
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd);border:1px solid var(--bd)}
+.feat-card{background:var(--black);padding:36px 32px;display:flex;gap:20px;transition:.3s}
+.feat-card:hover{background:#0d0d0d}
+.feat-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.feat-title{font-size:15px;font-weight:500;color:var(--white);margin-bottom:6px}
+.feat-desc{font-size:13px;color:var(--gray);line-height:1.6}
+
+/* Pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd)}
+.price-card{background:var(--black);padding:44px 36px;transition:.3s}
+.price-card:hover{background:#0d0d0d}
+.price-card.feat{background:var(--white);color:var(--black)}
+.price-card.feat:hover{background:#efefeb}
+.price-badge{font-size:10px;letter-spacing:.12em;text-transform:uppercase;border:1px solid currentColor;padding:3px 10px;display:inline-block;margin-bottom:24px;color:var(--gray)}
+.price-card.feat .price-badge{color:var(--black)}
+.price-name{font-family:'Bebas Neue',sans-serif;font-size:44px;line-height:1;margin-bottom:4px;color:var(--white)}
+.price-card.feat .price-name{color:var(--black)}
+.price-amount{font-family:'Bebas Neue',sans-serif;font-size:60px;line-height:1;color:var(--white)}
+.price-card.feat .price-amount{color:var(--black)}
+.price-period{font-size:12px;color:var(--gray);margin-bottom:4px}
+.price-card.feat .price-period{color:#666}
+.price-setup{font-size:12px;color:var(--gray);padding-bottom:24px;border-bottom:1px solid #1a1a1a;margin-bottom:20px}
+.price-card.feat .price-setup{border-bottom-color:#ddd;color:#555}
+.price-mx{font-size:12px;color:var(--gray);margin-bottom:24px}
+.price-card.feat .price-mx{color:#666}
+.price-feats{list-style:none;margin-bottom:36px}
+.price-feat{font-size:13px;color:var(--white);padding:8px 0;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;gap:10px}
+.price-card.feat .price-feat{color:var(--black);border-bottom-color:#ddd}
+.price-feat::before{content:'—';color:var(--gray);font-size:11px;flex-shrink:0}
+.price-card.feat .price-feat::before{color:#999}
+.price-feat.dim{color:var(--gray);text-decoration:line-through}
+.price-card.feat .price-feat.dim{color:#aaa}
+.price-btn{display:block;text-align:center;padding:13px 24px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border:1px solid #333;color:var(--white);transition:.2s}
+.price-btn:hover{border-color:var(--white);background:var(--white);color:var(--black)}
+.price-card.feat .price-btn{background:var(--black);color:var(--white);border-color:var(--black)}
+.price-card.feat .price-btn:hover{background:#111}
+
+/* ROI bar */
+.roi-bar{background:#111;border:1px solid var(--bd);padding:32px 40px;display:flex;align-items:center;gap:24px;margin-top:20px}
+.roi-icon{font-size:28px;flex-shrink:0}
+.roi-text{font-size:15px;color:var(--gray);line-height:1.6}
+.roi-text strong{color:var(--white);font-weight:500}
+
+/* CTA */
+.cta-sec{padding:140px 48px;text-align:center;border-top:1px solid var(--bd);position:relative;overflow:hidden}
+.cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#181818 0%,transparent 70%);pointer-events:none}
+.cta-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,8vw,120px);line-height:.92;margin-bottom:28px;position:relative}
+.cta-sub{font-size:15px;color:var(--gray);max-width:400px;margin:0 auto 48px;line-height:1.7}
+
+/* Footer */
+footer{padding:36px 48px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.footer-logo img{height:20px}
+.footer-text{font-size:12px;color:var(--gray)}
+.footer-links{display:flex;gap:24px;list-style:none}
+.footer-links a{font-size:12px;color:var(--gray);text-decoration:none;text-transform:uppercase;letter-spacing:.06em;transition:.2s}
+.footer-links a:hover{color:var(--white)}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<nav>
+  <div class="nav-logo"><img src="logo.png" alt="Auxia"></div>
+  <a href="index.html" class="nav-back">All industries</a>
+  <a href="#pricing" class="nav-cta">Get started</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="pill"><span class="pill-dot"></span>🍽️ Auxia for Restaurants & Food Services</div>
+    <h1 class="hero-title">Reservations handled.<br><span class="outline">Staff freed up.</span></h1>
+    <p class="hero-sub">Auxia answers reservation requests, sends your menu, and handles customer questions automatically — so your team can focus on the food.</p>
+    <div class="hero-actions">
+      <a href="contact.html" class="btn-primary">Start today</a>
+      <a href="#how" class="btn-sec">See how it works</a>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">2hrs</div><div class="stat-label">Saved daily</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">Missed reservations</div></div>
+      <div class="stat"><div class="stat-num">92%</div><div class="stat-label">Queries resolved</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-bg-grid"></div>
+    <div class="chat">
+      <div class="chat-hdr">
+        <div class="chat-av">⚡</div>
+        <div><div class="chat-nm">Auxia</div><div class="chat-st">● Online now</div></div>
+      </div>
+      <div class="bubble in">Hi! Do you have a table for 4 this Saturday at 8pm? Can you send me the menu?</div>
+      <div class="chat-time">2:47 AM</div>
+      <div class="bubble out">Hi! Saturday at 8pm is available for 4 people. I'm sending you our menu now. Any dietary restrictions I should note?</div>
+      <div class="chat-time" style="text-align:right">2:47 AM ✓✓</div>
+      <div class="typing"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">24/7 Availability</span>
+    <span class="ticker-item">WhatsApp Automation</span>
+    <span class="ticker-item">Lead Capture</span>
+    <span class="ticker-item">Appointment Booking</span>
+    <span class="ticker-item">SMS Automation</span>
+    <span class="ticker-item">Document Sending</span>
+    <span class="ticker-item">Instant Replies</span>
+    <span class="ticker-item">Google Calendar Sync</span>
+    <span class="ticker-item">24/7 Availability</span>
+    <span class="ticker-item">WhatsApp Automation</span>
+    <span class="ticker-item">Lead Capture</span>
+    <span class="ticker-item">Appointment Booking</span>
+    <span class="ticker-item">SMS Automation</span>
+    <span class="ticker-item">Document Sending</span>
+    <span class="ticker-item">Instant Replies</span>
+    <span class="ticker-item">Google Calendar Sync</span>
+  </div>
+</div>
+
+<!-- PAIN POINTS -->
+<section class="section" id="how">
+  <div class="sec-label">The problem</div>
+  <h2 class="sec-title reveal">The messages you miss cost you real money.</h2>
+  <div class="pain-grid reveal">
+    <div class="pain-card">
+      <div class="pain-num">01</div>
+      <div class="pain-title">Staff spends hours on WhatsApp</div>
+      <p class="pain-text">Taking reservations, sending menus, answering the same questions every day. Auxia handles all of it.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-num">02</div>
+      <div class="pain-title">Reservation requests go unanswered</div>
+      <p class="pain-text">Messages that come in when you're busy or closed mean lost tables and lost revenue.</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-num">03</div>
+      <div class="pain-title">Menu questions slow everything down</div>
+      <p class="pain-text">Customers ask about ingredients, allergies, and specials constantly. Auxia answers everything instantly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="sec-label">What Auxia does</div>
+  <h2 class="sec-title reveal">Your AI receptionist, ready in 48 hours.</h2>
+  <div class="feat-grid reveal">
+    <div class="feat-card">
+      <div class="feat-icon">💬</div>
+      <div><div class="feat-title">Reservation management</div><p class="feat-desc">Takes reservations, confirms them, and sends reminders automatically via WhatsApp.</p></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <div><div class="feat-title">Instant menu sending</div><p class="feat-desc">Sends your full menu as a PDF or link the moment a customer asks — with specials and pricing.</p></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📄</div>
+      <div><div class="feat-title">Hours & location info</div><p class="feat-desc">Answers opening hours, address, parking, and directions automatically 24/7.</p></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🎯</div>
+      <div><div class="feat-title">Allergy & special request handling</div><p class="feat-desc">Collects dietary restrictions and special requests before arrival so your kitchen is ready.</p></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔔</div>
+      <div><div class="feat-title">Reservation reminders</div><p class="feat-desc">Reduces no-shows with automatic confirmation messages sent 24 hours before the reservation.</p></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🌐</div>
+      <div><div class="feat-title">English & Spanish</div><p class="feat-desc">Auxia responds fluently in both languages. No configuration needed — it detects automatically.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+
+<!-- DASHBOARD PREVIEW SECTION -->
+<section class="section" id="dashboard-preview">
+  <div class="section-label">Client dashboard</div>
+  <h2 class="section-title reveal">See exactly what your<br><span style="-webkit-text-stroke:1px var(--white);color:transparent">bot does for you.</span></h2>
+  <p style="font-size:15px;color:var(--gray);max-width:520px;line-height:1.7;margin-bottom:48px;opacity:0;animation:fadeUp .7s ease forwards .3s">Every client gets access to a real-time dashboard. See every message answered, every lead captured, every appointment booked — all in one place.</p>
+
+  <div class="reveal" style="background:#0d0d0d;border:1px solid #1e1e1e;border-radius:4px;overflow:hidden;max-width:900px">
+
+    <!-- Mock topbar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid #1a1a1a;background:#0a0a0a">
+      <div style="display:flex;align-items:center;gap:8px">
+        <img src="logo.png" alt="Auxia" style="height:18px">
+        <span style="font-size:11px;color:#555;letter-spacing:.06em;text-transform:uppercase">Dashboard</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pulse 2s ease infinite"></div>
+          <span style="font-size:11px;color:#4ade80">Bot active</span>
+        </div>
+        <div style="background:#111;border:1px solid #222;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:500;color:#888">Pro Plan</div>
+      </div>
+    </div>
+
+    <!-- Period selector -->
+    <div style="padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--white);line-height:1">Last 30 days</div>
+        <div style="font-size:12px;color:#555;margin-top:2px">Your AI receptionist performance</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <div style="padding:5px 12px;font-size:11px;border:1px solid #222;color:#555;border-radius:3px;letter-spacing:.04em">7 days</div>
+        <div style="padding:5px 12px;font-size:11px;border:1px solid #444;color:var(--white);border-radius:3px;letter-spacing:.04em;background:#181818">30 days</div>
+        <div style="padding:5px 12px;font-size:11px;border:1px solid #222;color:#555;border-radius:3px;letter-spacing:.04em">90 days</div>
+      </div>
+    </div>
+
+    <!-- 4 Metric cards -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1a1a1a;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;margin-top:20px">
+      <div style="background:#0d0d0d;padding:20px 24px">
+        <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555;margin-bottom:10px">Messages replied</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--white);line-height:1">247</div>
+        <div style="font-size:11px;color:#4ade80;margin-top:6px">&#8593; 18% vs last period</div>
+      </div>
+      <div style="background:#0d0d0d;padding:20px 24px">
+        <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555;margin-bottom:10px">Leads captured</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--white);line-height:1">34</div>
+        <div style="font-size:11px;color:#4ade80;margin-top:6px">&#8593; 12% vs last period</div>
+      </div>
+      <div style="background:#0d0d0d;padding:20px 24px">
+        <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555;margin-bottom:10px">Appointments booked</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--white);line-height:1">19</div>
+        <div style="font-size:11px;color:#4ade80;margin-top:6px">&#8593; 6% vs last period</div>
+      </div>
+      <div style="background:#0d0d0d;padding:20px 24px">
+        <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555;margin-bottom:10px">Documents sent</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--white);line-height:1">41</div>
+        <div style="font-size:11px;color:#888;margin-top:6px">&#8212; Same as last period</div>
+      </div>
+    </div>
+
+    <!-- Breakdown bars -->
+    <div style="padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div>
+        <div style="font-size:11px;font-weight:500;color:var(--white);margin-bottom:18px;letter-spacing:.02em">Response breakdown</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+              <span style="color:#888">Bot handled</span>
+              <span style="color:var(--white);font-weight:500">92%</span>
+            </div>
+            <div style="height:4px;background:#1a1a1a;border-radius:2px"><div style="height:4px;background:var(--white);border-radius:2px;width:92%;transition:width 1s ease"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+              <span style="color:#888">Appointments booked</span>
+              <span style="color:var(--white);font-weight:500">34%</span>
+            </div>
+            <div style="height:4px;background:#1a1a1a;border-radius:2px"><div style="height:4px;background:#4ade80;border-radius:2px;width:34%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+              <span style="color:#888">Leads qualified</span>
+              <span style="color:var(--white);font-weight:500">61%</span>
+            </div>
+            <div style="height:4px;background:#1a1a1a;border-radius:2px"><div style="height:4px;background:#60a5fa;border-radius:2px;width:61%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+              <span style="color:#888">After hours replies</span>
+              <span style="color:var(--white);font-weight:500">48%</span>
+            </div>
+            <div style="height:4px;background:#1a1a1a;border-radius:2px"><div style="height:4px;background:#fbbf24;border-radius:2px;width:48%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:500;color:var(--white);margin-bottom:18px;letter-spacing:.02em">What this means for you</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:6px;height:6px;background:#4ade80;border-radius:50%;margin-top:5px;flex-shrink:0"></div>
+            <span style="font-size:13px;color:#888;line-height:1.5"><span style="color:var(--white)">247 messages</span> answered without you lifting a finger</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:6px;height:6px;background:#60a5fa;border-radius:50%;margin-top:5px;flex-shrink:0"></div>
+            <span style="font-size:13px;color:#888;line-height:1.5"><span style="color:var(--white)">34 leads</span> captured and qualified automatically</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:6px;height:6px;background:#fbbf24;border-radius:50%;margin-top:5px;flex-shrink:0"></div>
+            <span style="font-size:13px;color:#888;line-height:1.5"><span style="color:var(--white)">48% of replies</span> happened while you were asleep or busy</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:6px;height:6px;background:var(--white);border-radius:50%;margin-top:5px;flex-shrink:0"></div>
+            <span style="font-size:13px;color:#888;line-height:1.5"><span style="color:var(--white)">19 viewings</span> booked directly into your calendar</span>
+          </div>
+        </div>
+        <a href="contact.html" style="display:inline-block;margin-top:20px;background:var(--white);color:var(--black);padding:12px 28px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:.2s">Get your dashboard &#8594;</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Mobile responsive override -->
+  <style>
+  @media(max-width:768px){
+    #dashboard-preview [style*="grid-template-columns:repeat(4"]{grid-template-columns:1fr 1fr !important}
+    #dashboard-preview [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  </style>
+</section>
+<!-- END DASHBOARD PREVIEW -->
+
+<section class="section" id="pricing">
+  <div class="sec-label">Pricing</div>
+  <h2 class="sec-title reveal">Simple pricing. Real results.</h2>
+
+  <div class="pricing-grid reveal">
+    <!-- Core -->
+    <div class="price-card">
+      <div class="price-badge">Core</div>
+      <div class="price-name">Core</div>
+      <div class="price-amount">$79<span style="font-size:18px;font-weight:300">/mo</span></div>
+      <div class="price-period">USD · billed monthly</div>
+      <div class="price-setup">+ $299 one-time setup</div>
+      <ul class="price-feats">
+        <li class="price-feat">WhatsApp & SMS 24/7</li>
+        <li class="price-feat">FAQ automation</li>
+        <li class="price-feat">Lead capture</li>
+        <li class="price-feat">After-hours replies</li>
+        <li class="price-feat">English & Spanish</li>
+        <li class="price-feat dim">Appointment booking</li>
+        <li class="price-feat dim">Document sending</li>
+      </ul>
+      <a href="contact.html" class="price-btn">Get started</a>
+    </div>
+
+    <!-- Pro -->
+    <div class="price-card feat">
+      <div class="price-badge">⭐ Most popular</div>
+      <div class="price-name">Pro</div>
+      <div class="price-amount">$99<span style="font-size:18px;font-weight:300">/mo</span></div>
+      <div class="price-period">USD · billed monthly</div>
+      <div class="price-setup">+ $349 one-time setup</div>
+      <ul class="price-feats">
+        <li class="price-feat">Everything in Core</li>
+        <li class="price-feat">Appointment booking</li>
+        <li class="price-feat">Google Calendar sync</li>
+        <li class="price-feat">Document & PDF sending</li>
+        <li class="price-feat">Smart lead qualification</li>
+        <li class="price-feat">Multi-step conversations</li>
+        <li class="price-feat">Smart notifications</li>
+      </ul>
+      <a href="contact.html" class="price-btn">Get started</a>
+    </div>
+
+    <!-- Elite -->
+    <div class="price-card">
+      <div class="price-badge">Elite</div>
+      <div class="price-name">Elite</div>
+      <div class="price-amount">$129<span style="font-size:18px;font-weight:300">/mo</span></div>
+      <div class="price-period">USD · billed monthly</div>
+      <div class="price-setup">+ $449 one-time setup</div>
+      <ul class="price-feats">
+        <li class="price-feat">Everything in Pro</li>
+        <li class="price-feat">Automated follow-ups</li>
+        <li class="price-feat">Missed lead recovery</li>
+        <li class="price-feat">Customer memory</li>
+        <li class="price-feat">Analytics dashboard</li>
+        <li class="price-feat">Custom AI personality</li>
+        <li class="price-feat">CRM integration (soon)</li>
+      </ul>
+      <a href="contact.html" class="price-btn">Get started</a>
+    </div>
+  </div>
+
+  <div class="roi-bar reveal">
+    <div class="roi-icon">💡</div>
+    <div class="roi-text"><strong>Saving 2 hours of staff time per day pays for Auxia in the first week.</strong> Plus zero reservation requests ever go unanswered again.</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-sec">
+  <div class="cta-bg"></div>
+  <h2 class="cta-title reveal">Your next client<br>is messaging<br><span style="-webkit-text-stroke:1px var(--white);color:transparent">right now.</span></h2>
+  <p class="cta-sub reveal">Set up Auxia in 48 hours and never lose a lead to an unanswered message again.</p>
+  <div class="reveal"><a href="contact.html" class="btn-primary" style="font-size:13px;padding:17px 48px">Start today — from $299</a></div>
+</section>
+
+<footer>
+  <div class="footer-logo"><img src="logo.png" alt="Auxia"></div>
+  <span class="footer-text">© 2026 Auxia · 🍽️ Restaurants & Food Services</span>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a)})();
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.querySelectorAll('.pain-card,.feat-card,.price-card').forEach((c,i)=>c.style.transitionDelay=(i*.08)+'s')}}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
+</script>
+<!-- CHATBOT WIDGET -->
+<style>
+.chat-widget{position:fixed;bottom:28px;right:28px;z-index:9000;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.chat-toggle{width:56px;height:56px;background:var(--white);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;transition:.2s;box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.chat-toggle:hover{transform:scale(1.08)}
+.chat-box{width:320px;background:#111;border:1px solid #222;border-radius:4px;overflow:hidden;transform:scale(0.95) translateY(10px);opacity:0;pointer-events:none;transition:all .25s cubic-bezier(.4,0,.2,1);transform-origin:bottom right}
+.chat-box.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+.chat-hdr{background:#0d0d0d;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e1e1e}
+.chat-hdr-left{display:flex;align-items:center;gap:10px}
+.chat-av{width:34px;height:34px;background:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.chat-nm{font-size:14px;font-weight:500;color:var(--white);font-family:'DM Sans',sans-serif}
+.chat-st{font-size:11px;color:#4ade80}
+.chat-close{background:none;border:none;color:var(--gray);font-size:18px;cursor:pointer;padding:0;line-height:1;transition:.2s}
+.chat-close:hover{color:var(--white)}
+.chat-msgs{padding:16px;height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+.chat-msgs::-webkit-scrollbar{width:0}
+.msg{max-width:85%;font-size:13px;line-height:1.5;font-family:'DM Sans',sans-serif;animation:msgIn .2s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.bot{background:#1a1a1a;color:var(--gray);padding:10px 14px;border-radius:2px 12px 12px 2px;align-self:flex-start}
+.msg.usr{background:var(--white);color:#0a0a0a;padding:10px 14px;border-radius:12px 2px 2px 12px;align-self:flex-end}
+.msg-time{font-size:10px;color:#444;align-self:flex-end;margin-top:-4px}
+.typing-ind{display:flex;gap:4px;padding:10px 14px;background:#1a1a1a;width:fit-content;border-radius:2px 12px 12px 2px;align-self:flex-start}
+.typing-ind span{width:6px;height:6px;background:#555;border-radius:50%;animation:bounce 1.2s ease infinite}
+.typing-ind span:nth-child(2){animation-delay:.2s}
+.typing-ind span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-quick{padding:0 16px 12px;display:flex;flex-wrap:wrap;gap:6px}
+.quick-btn{background:transparent;border:0.5px solid #333;color:#888;font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s}
+.quick-btn:hover{border-color:#666;color:var(--white)}
+.chat-input-row{padding:12px 16px;border-top:1px solid #1e1e1e;display:flex;gap:8px;align-items:center}
+.chat-input{flex:1;background:transparent;border:0.5px solid #333;color:var(--white);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;outline:none;border-radius:20px;transition:.2s}
+.chat-input::placeholder{color:#444}
+.chat-input:focus{border-color:#555}
+.chat-send{background:var(--white);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:.2s}
+.chat-send:hover{background:#ddd}
+
+@media(max-width:768px){
+  nav{padding:16px 20px}
+  .nav-links{display:none}
+  .hero{grid-template-columns:1fr;min-height:auto;padding-top:90px}
+  .hero-left{padding:40px 20px 30px}
+  .hero-right{display:none}
+  .hero-title{font-size:clamp(48px,12vw,80px)}
+  .hero-sub{font-size:14px}
+  .hero-stats{position:static;flex-direction:row;gap:24px;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd)}
+  .section{padding:60px 20px}
+  .steps{grid-template-columns:1fr}
+  .step{border-right:none;border-bottom:1px solid var(--bd);padding:28px 0}
+  .niches-grid{grid-template-columns:1fr 1fr}
+  .tiers-grid{grid-template-columns:1fr}
+  .cta-sec{padding:80px 20px}
+  footer{padding:28px 20px;flex-direction:column;gap:16px;text-align:center}
+  .footer-links{justify-content:center}
+  .page-hero{padding:120px 20px 48px}
+  .page-title{font-size:clamp(48px,12vw,80px)}
+  .content-wrap{padding:40px 20px}
+  .contact-grid{grid-template-columns:1fr;margin:40px 20px}
+  .form-section{padding:40px 20px}
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:1}
+  .chat-widget{bottom:16px;right:16px}
+  .chat-box{width:calc(100vw - 32px)}
+  .pricing-grid{grid-template-columns:1fr}
+  .pain-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .niche-card{padding:28px 20px}
+  .hero-actions{flex-direction:column;align-items:flex-start;gap:16px}
+  .ticker-inner{animation-duration:12s}
+  .margin-row{grid-template-columns:1fr}
+  .plans-grid{grid-template-columns:1fr}
+  .names-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .niches-grid{grid-template-columns:1fr}
+  .hero-title{font-size:52px}
+  nav{padding:14px 16px}
+  .nav-cta{padding:8px 16px;font-size:11px}
+}
+</style>
+
+<div class="chat-widget">
+  <div class="chat-box" id="chatBox">
+    <div class="chat-hdr">
+      <div class="chat-hdr-left">
+        <div class="chat-av">&#9889;</div>
+        <div>
+          <div class="chat-nm">Auxia</div>
+          <div class="chat-st">&#9679; Online now</div>
+        </div>
+      </div>
+      <button class="chat-close" onclick="toggleChat()">&#10005;</button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-quick" id="quickBtns"></div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="chat-send" onclick="sendMsg()">&#10148;</button>
+    </div>
+  </div>
+  <button class="chat-toggle" onclick="toggleChat()" id="chatToggle">&#9889;</button>
+</div>
+
+<script>
+var chatOpen=false;
+var chatStarted=false;
+
+const faqs={
+  'pricing':['Great question! We have 3 plans:\n\nCore: $399 setup + $99/mo\nPro: $499 setup + $169/mo (most popular)\nElite: $649 setup + $229/mo\n\nAll plans start with a one-time setup fee, and your first monthly payment begins the following month.','Pricing'],
+  'how it works':['Auxia plugs into your existing WhatsApp or SMS number and automatically answers messages 24/7. We configure it with your business info, and your AI assistant is live within 48 hours. No tech skills needed.','How it works'],
+  'setup time':['Your Auxia assistant goes live within 48 hours of payment and setup. We handle everything — you just provide your business information.','Setup time'],
+  'real estate':['Auxia is perfect for real estate agents. It answers property inquiries, books viewings, qualifies buyers, and sends property info — all automatically, even at 2am during showings.','Real estate'],
+  'demo':['Absolutely! You can email us at auxia.info01@gmail.com or visit our contact page to book a live demo. We can also send you our demo WhatsApp number so you can try it yourself right now.','Book a demo'],
+  'languages':['Yes! Auxia responds in both English and Spanish automatically. It detects the language of the incoming message and replies accordingly — no configuration needed.','Languages'],
+  'whatsapp':['Yes! Auxia connects directly to your existing WhatsApp Business number. Your customers message you exactly as they do now — Auxia handles the replies automatically.','WhatsApp'],
+  'cancel':['You can cancel anytime with 30 days notice. There are no long-term contracts. Your data will be retained for 30 days after cancellation then permanently deleted.','Cancellation']
+};
+
+const quickOptions=[
+  {label:'Pricing',key:'pricing'},
+  {label:'How it works',key:'how it works'},
+  {label:'Setup time',key:'setup time'},
+  {label:'Real estate',key:'real estate'},
+  {label:'Book a demo',key:'demo'},
+  {label:'Languages',key:'languages'}
+];
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatBox').classList.toggle('open',chatOpen);
+  document.getElementById('chatToggle').innerHTML=chatOpen?'&#10005;':'&#9889;';
+  if(chatOpen&&!chatStarted){
+    chatStarted=true;
+    setTimeout(()=>addMsg('bot','Hi! I am Auxia, your AI receptionist assistant. How can I help you today?'),300);
+    setTimeout(()=>showQuick(),800);
+  }
+}
+
+function showQuick(){
+  const qb=document.getElementById('quickBtns');
+  qb.innerHTML='';
+  quickOptions.forEach(o=>{
+    const btn=document.createElement('button');
+    btn.className='quick-btn';
+    btn.textContent=o.label;
+    btn.onclick=()=>handleQuick(o.key,o.label);
+    qb.appendChild(btn);
+  });
+}
+
+function handleQuick(key,label){
+  addMsg('usr',label);
+  document.getElementById('quickBtns').innerHTML='';
+  showTyping();
+  setTimeout(()=>{
+    removeTyping();
+    const ans=faqs[key];
+    if(ans)addMsg('bot',ans[0]);
+    setTimeout(()=>showQuick(),600);
+  },900);
+}
+
+function addMsg(type,text){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');
+  div.className='msg '+type;
+  div.style.whiteSpace='pre-line';
+  div.textContent=text;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+var typingEl=null;
+function showTyping(){
+  const msgs=document.getElementById('chatMsgs');
+  typingEl=document.createElement('div');
+  typingEl.className='typing-ind';
+  typingEl.innerHTML='<span></span><span></span><span></span>';
+  msgs.appendChild(typingEl);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function removeTyping(){
+  if(typingEl){typingEl.remove();typingEl=null;}
+}
+
+function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text)return;
+  addMsg('usr',text);
+  input.value='';
+  document.getElementById('quickBtns').innerHTML='';
+  showTyping();
+  const lower=text.toLowerCase();
+  let reply='Thanks for your message! For a quick response, email us at auxia.info01@gmail.com, WhatsApp us at +1 (956) 997-9277, or visit our contact page. We reply within 2 hours.';
+  for(const key in faqs){
+    if(lower.includes(key)){reply=faqs[key][0];break;}
+  }
+  if(lower.includes('price')||lower.includes('cost')||lower.includes('how much'))reply=faqs['pricing'][0];
+  if(lower.includes('start')||lower.includes('setup')||lower.includes('begin'))reply=faqs['setup time'][0];
+  if(lower.includes('work')||lower.includes('does it'))reply=faqs['how it works'][0];
+  if(lower.includes('spanish')||lower.includes('english')||lower.includes('language'))reply=faqs['languages'][0];
+  if(lower.includes('whatsapp'))reply=faqs['whatsapp'][0];
+  if(lower.includes('cancel')||lower.includes('contract'))reply=faqs['cancel'][0];
+  setTimeout(()=>{
+    removeTyping();
+    addMsg('bot',reply);
+    setTimeout(()=>showQuick(),500);
+  },1000+Math.random()*500);
+}
+</script>
+
+
+</body>
+</html>
